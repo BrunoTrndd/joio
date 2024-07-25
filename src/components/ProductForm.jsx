@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import ProductFields from './ProductFields';
 import '../style/App.css';
+import { Autocomplete, Checkbox, FormControl, FormControlLabel, Grid, InputLabel, MenuItem, Select, TextField, Typography } from '@mui/material';
 
 const categories = [
   { value: 'Camisa', label: 'Camisa' },
@@ -16,6 +17,7 @@ const corOptions = [
   'Azul turquesa', 'Verde bandeira', 'Verde musgo', 'Cinza mescla'
 ];
 const tamanhoOptions = ['P', 'M', 'G', 'GG', 'XGG'];
+const tagsOptions = ['Masculino', 'Anime']
 
 const ProductForm = ({ addProduct, setIsAdding, editProduct, productToEdit }) => {
   const [product, setProduct] = useState({
@@ -28,10 +30,12 @@ const ProductForm = ({ addProduct, setIsAdding, editProduct, productToEdit }) =>
     cor: [],
     tamanho: [],
   });
+  const [tags, setTags] = useState("")
 
   useEffect(() => {
     if (productToEdit) {
       setProduct(productToEdit);
+      setTags(productToEdit.tags)
     }
   }, [productToEdit]);
 
@@ -71,94 +75,185 @@ const ProductForm = ({ addProduct, setIsAdding, editProduct, productToEdit }) =>
     setIsAdding(false);
   };
 
+  const onChangeTags = (evt, newVal) => {
+    setTags(newVal)
+    setProduct((prevProduct) => ({ ...prevProduct, tags: newVal }));
+  }
+
   return (
-    <div className='inner-container'>
+    <Grid width="1000px" height="600px" border="1px solid #cccccc" borderRadius="4px" pt={1} px={2}>
       <form onSubmit={handleSubmit} className="form">
-        <div className='inner-left-fields'>
-          <ProductFields product={product} handleChange={handleChange} />
-          <label>Category:</label>
-          <select name="category" value={product.category} onChange={handleChange} required>
-            <option value="">Select a category</option>
-            {categories.map((cat) => (
-              <option key={cat.value} value={cat.value}>{cat.label}</option>
-            ))}
-          </select>
-        </div>
-        <div className='inner-right-fields'>
-          {product.category === 'Camisa' && (
-            <>
-              <div className="checkbox-group">
-                <label>Malha:</label>
-                <input
-                  type="checkbox"
-                  onChange={() => handleSelectAll('malha', malhaOptions)}
-                  checked={product.malha.length === malhaOptions.length}
-                />
-                <span>Select All</span>
-                {malhaOptions.map((option) => (
-                  <div key={option} className="checkbox-item">
-                    <input
-                      type="checkbox"
-                      name="malha"
-                      value={option}
-                      checked={product.malha.includes(option)}
-                      onChange={() => handleCheckboxChange('malha', option)}
+        <Grid container width="100%" alignItems='center' justifyContent="center" direction='column'>
+          <Grid width="100%">
+            <ProductFields product={product} handleChange={handleChange} />
+          </Grid>
+        </Grid>
+        <Grid container gap={2} wrap='nowrap'>
+          <Grid item xs={3}>
+            <Grid>
+              <FormControl fullWidth>
+                <InputLabel id="category-select-label">Category</InputLabel>
+                <Select
+                  label="Category"
+                  size='small'
+                  labelId="category-select-label"
+                  value={product.category}
+                  onChange={handleChange}
+                  name="category"
+                  required
+                >
+                  {categories.map((cat) => (
+                    <MenuItem key={cat.value} value={cat.value} label>{cat.label}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid mt={1}>
+              <FormControl fullWidth>
+                <Autocomplete
+                  onChange={onChangeTags}
+                  value={tags.length > 0 ? tags : []}
+                  multiple
+                  id="tags-standard"
+                  options={tagsOptions}
+                  getOptionLabel={(option) => option}
+                  defaultValue={[]}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      size='small'
+                      variant="outlined"
+                      label="Tags"
+                      placeholder="Tags"
                     />
-                    <label>{option}</label>
-                  </div>
-                ))}
-              </div>
-              <div className="checkbox-group">
-                <label>Cor:</label>
-                <input
-                  type="checkbox"
-                  onChange={() => handleSelectAll('cor', corOptions)}
-                  checked={product.cor.length === corOptions.length}
+                  )}
                 />
-                <span>Select All</span>
-                {corOptions.map((option) => (
-                  <div key={option} className="checkbox-item">
-                    <input
-                      type="checkbox"
-                      name="cor"
-                      value={option}
-                      checked={product.cor.includes(option)}
-                      onChange={() => handleCheckboxChange('cor', option)}
-                    />
-                    <label>{option}</label>
-                  </div>
-                ))}
-              </div>
-              <div className="checkbox-group">
-                <label>Tamanho:</label>
-                <input
-                  type="checkbox"
-                  onChange={() => handleSelectAll('tamanho', tamanhoOptions)}
-                  checked={product.tamanho.length === tamanhoOptions.length}
-                />
-                <span>Select All</span>
-                {tamanhoOptions.map((option) => (
-                  <div key={option} className="checkbox-item">
-                    <input
-                      type="checkbox"
-                      name="tamanho"
-                      value={option}
-                      checked={product.tamanho.includes(option)}
-                      onChange={() => handleCheckboxChange('tamanho', option)}
-                    />
-                    <label>{option}</label>
-                  </div>
-                ))}
-              </div>
-            </>
-          )}
-        </div>
+              </FormControl>
+            </Grid>
+          </Grid>
+
+          <Grid item xs={12}>
+            <Grid container direction="row" justifyContent="space-between" width="100%" >
+              {product.category === 'Camisa' && (
+                <Grid border="1px solid #cccccc" borderRadius="4px" p={2}>
+
+                  <Grid display='flex' flexDirection="row" width="100%" >
+                    <Grid item xs={3} display='flex' flexDirection='column'>
+                      <label>Malha: </label>
+                      <Grid>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              size='small'
+                              name="cor"
+                              onChange={() => handleSelectAll('malha', malhaOptions)}
+                              checked={product.malha.length === malhaOptions.length} />
+                          }
+                          label="Select All"
+                        />
+                      </Grid>
+                      {malhaOptions.map((option) => (
+                        <Grid item xs={1} key={option}>
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                size='small'
+                                name="malha"
+                                value={option}
+                                checked={product.malha.includes(option)}
+                                onChange={() => handleCheckboxChange('malha', option)}
+                              />
+                            }
+                            label={option}
+                            sx={{ textWrap: 'nowrap' }}
+                          />
+                        </Grid>
+                      ))}
+                    </Grid>
+                    <Grid container width="100%">
+                      <label>Cor:</label>
+                      <Grid container columns={4} columnSpacing={1}>
+                        <Grid item xs={1}>
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                size='small'
+                                name="cor"
+                                onChange={() => handleSelectAll('cor', corOptions)}
+                                checked={product.cor.length === corOptions.length} />
+                            }
+                            label="Select All"
+                          />
+                        </Grid>
+                        {corOptions.map((option) => (
+                          <Grid item xs={1} key={option}>
+                            <FormControlLabel
+                              control={
+                                <Checkbox
+                                  size='small'
+                                  name="cor"
+                                  value={option}
+                                  checked={product.cor.includes(option)}
+                                  onChange={() => handleCheckboxChange('cor', option)}
+                                />
+                              }
+                              label={option}
+                              sx={{ textWrap: 'nowrap' }}
+                            />
+                          </Grid>
+                        ))}
+                      </Grid>
+                    </Grid>
+                  </Grid>
+
+                  <Grid>
+                    <Typography>Tamanho:</Typography>
+                    <Grid container columns={2} mt={2}>
+                      <Grid item xs={1}>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              size='small'
+                              name="cor"
+                              onChange={() => handleSelectAll('tamanho', tamanhoOptions)}
+                              checked={product.tamanho.length === tamanhoOptions.length} />
+                          }
+                          label="Select All"
+                        />
+                      </Grid>
+                      {tamanhoOptions.map((option) => (
+                        <Grid item xs={1}>
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                size='small'
+                                name="tamanho"
+                                value={option}
+                                checked={product.tamanho.includes(option)}
+                                onChange={() => handleCheckboxChange('tamanho', option)} />
+                            }
+                            label={option}
+                          />
+                        </Grid>
+                      ))}
+                    </Grid>
+
+
+                  </Grid>
+                </Grid>
+              )}
+            </Grid>
+          </Grid>
+        </Grid>
+
+
+
         <div className="form-buttons">
           <button type="button" onClick={() => setIsAdding(false)}>Back</button>
           <button type="submit">Save</button>
         </div>
-      </form>
-    </div>
+      </form >
+    </Grid >
   );
 };
 

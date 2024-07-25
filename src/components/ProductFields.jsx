@@ -1,19 +1,20 @@
 import React from 'react';
 import '../style/App.css';
+import { Grid, TextField } from '@mui/material';
 
 const ProductFields = ({ product, handleChange }) => {
   return (
-    <div className="horizontal-fields">
-      <div>
-        <input placeholder='ID' type="text" name="id" value={product.id} onChange={handleChange} required />
-      </div>
-      <div>
-        <input placeholder='Código' type="text" name="code" value={product.code} onChange={handleChange} required />
-      </div>
-      <div>
-        <input placeholder='Nome' type="text" name="name" value={product.name} onChange={handleChange} required />
-      </div>
-    </div>
+    <Grid container direction="row" justifyContent="space-between" wrap='nowrap' gap={1}>
+      <Grid item xs={4}>
+        <TextField variant="outlined" fullWidth size='small' label='ID' type="text" name="id" value={product.id} onChange={handleChange} required />
+      </Grid>
+      <Grid item xs={4}>
+        <TextField variant="outlined" fullWidth size='small' label='Código' type="text" name="code" value={product.code} onChange={handleChange} required />
+      </Grid>
+      <Grid item xs={8}>
+        <TextField variant="outlined" fullWidth size='small' label='Nome' type="text" name="name" value={product.name} onChange={handleChange} required />
+      </Grid>
+    </Grid>
   );
 };
 
