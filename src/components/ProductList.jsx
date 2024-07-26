@@ -1,27 +1,45 @@
 import React from 'react';
 import '../style/App.css';
+import { Button, Grid, List, Typography } from '@mui/material';
 
-const ProductList = ({ products, setIsAdding, setProductToEdit }) => {
+const ProductList = ({ products, setIsAdding, setProductToEdit, removeProduct }) => {
   return (
-    <div>
-      <div className="inner-container">
-        <table className="table">
-          <tbody>
-            {products.map((product, index) => (
-              <tr key={index} className={index % 2 === 0 ? 'evenRow' : 'oddRow'}>
-                <td>{product.id}</td>
-                <td>{product.code}</td>
-                <td>{product.name}</td>
-                <td>{product.category}</td>
-                <td>
-                  <button onClick={() => { setIsAdding(true); setProductToEdit(product); }}>Edit</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
+    <Grid display="flex" flexDirection="column" width="100ch" >
+      <Grid container columns={6} alignItems="center" justifyContent="space-between" px={2} flexWrap="nowrap">
+        <Grid item display="flex" justifyContent="center" xs={2}><Typography variant='h6'>ID</Typography></Grid>
+        <Grid item display="flex" justifyContent="center" xs={2}><Typography variant='h6'>Código</Typography></Grid>
+        <Grid item display="flex" justifyContent="center" xs={2}><Typography variant='h6'>Nome</Typography></Grid>
+        <Grid item display="flex" justifyContent="center" xs={2}><Typography variant='h6'>Categoria</Typography></Grid>
+        <Grid item display="flex" justifyContent="center" xs={1}></Grid>
+        <Grid item display="flex" justifyContent="center" xs={1}></Grid>
+      </Grid>
+      <List>
+        {products.map((product, index) => (
+          <Grid container columns={6} alignItems="center" justifyContent="space-between" px={2} sx={{ bgcolor: index % 2 === 0 ? "#cccccc" : "#ffffff" }} flexWrap="nowrap">
+            <Grid item display="flex" justifyContent="center" xs={2}>
+              {product.id}
+            </Grid>
+            <Grid item display="flex" justifyContent="center" xs={2}>
+              {product.code}
+            </Grid>
+            <Grid item display="flex" justifyContent="center" xs={2}>
+              {product.name}
+            </Grid>
+            <Grid item display="flex" justifyContent="center" xs={2}>
+              {product.category}
+            </Grid>
+            <Grid item display="flex" justifyContent="center" xs={1} >
+              <Button onClick={() => { setIsAdding(true); setProductToEdit(product); }}>Edit</Button>
+            </Grid>
+            <Grid item display="flex" justifyContent="center" xs={1} >
+              <Button color="error" onClick={() => { removeProduct(product); }}>Remove</Button>
+            </Grid>
+          </Grid>
+        ))
+        }
+      </List >
+    </Grid >
+
   );
 };
 

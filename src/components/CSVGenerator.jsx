@@ -48,13 +48,83 @@ const CSVGenerator = ({ products }) => {
     { label: "GTIN13 / EAN", key: "gtin13" },
     { label: "GTIN14 / ITF-14", key: "gtin14" },
     { label: "ISBN", key: "isbn" },
-    { label: "MPN", key: "mpn" }
+    { label: "MPN", key: "mpn" },
+    { label: "Nome do atributo 1", key: "att1Name" },
+    { label: "Valores do atributo 1", key: "att1Values" },
+    { label: "Nome do atributo 2", key: "att2Name" },
+    { label: "Valores do atributo 2", key: "att2Values" },
+    { label: "Nome do atributo 3", key: "att3Name" },
+    { label: "Valores do atributo 3", key: "att3Values" },
   ];
 
-  const data = products.map((product) => ({
+  const substituirSiglasMalha = (malha) => {
+    const siglas = {
+      "Economica": "QC",
+      "Padrão": "MQ",
+      "Prime": "PM"
+    };
+    return siglas[malha] || malha;
+  };
+
+  const substituirSiglasCor = (cor) => {
+    const siglasCor = {
+      "Branco": "BR",
+      "Amarelo canário": "AC",
+      "Amarelo outro": "AO",
+      "Laranja": "LA",
+      "Vermelho": "VM",
+      "Vinho": "VH",
+      "Rosa pink": "RP",
+      "Rosa bebê": "RB",
+      "Roxo": "RX",
+      "Azul royal": "AR",
+      "Azul marinho": "AM",
+      "Azul turquesa": "AT",
+      "Verde bandeira": "VB",
+      "Verde musgo": "VMU",
+      "Cinza mescla": "CM"
+    };
+    return siglasCor[cor] || cor;
+  };
+
+  const gerarVariacoes = (produto) => {
+    const { malha, cor, tamanho } = produto;
+    const variacoes = [];
+
+    malha.forEach(m => {
+      cor.forEach(c => {
+        tamanho.forEach(t => {
+          variacoes.push({
+            ...produto,
+            malha: substituirSiglasMalha(m),
+            cor: substituirSiglasCor(c),
+            tamanho: t
+          });
+        });
+      });
+    });
+
+    return variacoes;
+  };
+
+  const gerarVariacoesParaProdutos = (produtos) => {
+    let todasVariacoes = [];
+
+    produtos.forEach(produto => {
+      todasVariacoes = todasVariacoes.concat(gerarVariacoes(produto));
+    });
+
+    return todasVariacoes;
+  };
+
+  const todasVariacoes = gerarVariacoesParaProdutos(products);
+
+  const data = [...products, ...todasVariacoes].map((product) => ({
     id: product.id,
     tipo: product.category,
-    sku: product.code,
+    sku: product.malha.length > 2
+      ? ''
+      : `${product.code}-${product.malha}-${product.cor}-${product.tamanho}`,
     name: product.name,
     publicado: '',
     emDestaque: '',
@@ -79,7 +149,7 @@ const CSVGenerator = ({ products }) => {
     precoPromocional: '',
     preco: '',
     categorias: '',
-    tags: '',
+    tags: product.tags,
     classeEntrega: '',
     imagens: '',
     limiteDownloads: '',
@@ -96,7 +166,13 @@ const CSVGenerator = ({ products }) => {
     gtin13: '',
     gtin14: '',
     isbn: '',
-    mpn: ''
+    mpn: '',
+    att1Name: "Malha",
+    att1Values: product.malha,
+    att2Name: "Cor",
+    att2Values: product.cor,
+    att3Name: "Tamanho",
+    att3Values: product.tamanho,
   }));
 
   return (
